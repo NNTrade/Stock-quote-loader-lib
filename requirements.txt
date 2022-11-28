@@ -1,4 +1,7 @@
 git+https://git@github.com/NNTrade/TimeFrame-lib.git@v1.0.1#egg=NNTrade.common
+investpy
+investiny
+pandas-datareader
 yfinance~=0.1.87
 pandas~=1.5.2
 numpy~=1.23.5

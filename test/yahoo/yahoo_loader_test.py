@@ -2,7 +2,7 @@ import unittest
 import logging
 import pandas as pd
 from datetime import datetime, date
-from src import load_stock_candles
+from src.yahoo.yahoo_loader import load_stock_candles
 from NNTrade.common import TimeFrame
 from test.test_tools.compare_dt import compare_df
 
@@ -89,21 +89,9 @@ class LoadQuoteTestCase(unittest.TestCase):
         expected_from_dt = date(2020, 3, 5)
         expected_till_dt = date(2020, 3, 6)
 
-        expected_df = pd.DataFrame(data={"open": [],
-                                         "high": [],
-                                         "low": [],
-                                         "close": [],
-                                         "volume": [],
-                                         "start_date_time": []}) \
-            .set_index("start_date_time")
-
-        # Act
-        asserted_df = load_stock_candles(expected_stock_code, expected_from_dt, expected_till_dt, expected_timeframe)
-
         # Assert
-        self.logger.info("Loaded data")
-        self.logger.info(asserted_df)
-        compare_df(self, expected_df, asserted_df)
+        with self.assertRaises(Exception):
+            load_stock_candles(expected_stock_code, expected_from_dt, expected_till_dt, expected_timeframe)
 
     def test_WHEN_request_more_than_30_intraday_THEN_get_exception(self):
         # Array
