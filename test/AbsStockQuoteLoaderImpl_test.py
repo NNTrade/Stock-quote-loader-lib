@@ -4,18 +4,16 @@ from datetime import date, timedelta
 from NNTrade.common import TimeFrame
 from src import YahooStockQuoteLoader, AbsStockQuoteLoader, InvestingStockQuoteLoader, InvestingStock, MoexStockQuoteLoader
 
-class AbsStockQuoteLoaderImplTestCase(unittest.TestCase):
+def get_impl_dic():
+    return {"Yahoo": YahooStockQuoteLoader(), "Investing.com": InvestingStockQuoteLoader(), "Moex.ru": MoexStockQuoteLoader()}
+
+class AbsStockQuoteLoaderImpl_source_url_TestCase(unittest.TestCase):
     logger = logging.getLogger(__name__)
     logging.basicConfig(format='%(asctime)s %(module)s %(levelname)s: %(message)s',
                         datefmt='%m/%d/%Y %I:%M:%S %p', level=logging.DEBUG)
 
-    impl_dic = {"Yahoo": YahooStockQuoteLoader(), "Investing.com": InvestingStockQuoteLoader(), "Moex.ru": MoexStockQuoteLoader()}
-    stock_source_map = {"Yahoo": "BTC-USD", "Investing.com": InvestingStock("AAPL", "United States"), "Moex.ru": "AAPL-RM"}
-
-
-    expected_from_dt = date(2020, 9, 15)
-    expected_till_dt = date(2020, 9, 18)
-
+    impl_dic = get_impl_dic()
+    
     def test_WHEN_request_source_url_THEN_get_url(self):
         # Array
 
@@ -26,7 +24,57 @@ class AbsStockQuoteLoaderImplTestCase(unittest.TestCase):
                 impl: AbsStockQuoteLoader = self.impl_dic[i]
                 self.logger.info(f"Test {impl_name}")
                 self.assertIsNotNone(impl.source_url)  
-    
+
+
+class AbsStockQuoteLoaderImpl_download_mass_TestCase(unittest.TestCase):
+    logger = logging.getLogger(__name__)
+    logging.basicConfig(format='%(asctime)s %(module)s %(levelname)s: %(message)s',
+                        datefmt='%m/%d/%Y %I:%M:%S %p', level=logging.DEBUG)
+
+    impl_dic = get_impl_dic()
+    stock_source_map = {"Yahoo": ["BTC-USD","RUB=X"], 
+                        "Investing.com": [InvestingStock("AAPL", "United States"), InvestingStock("TSLA", "United States")], 
+                        "Moex.ru": ["AAPL-RM", "GAZP"]}
+
+
+    expected_from_dt = date(2020, 9, 15)
+    expected_till_dt = date(2020, 9, 18)
+
+    def test_WHEN_request_data_THEN_get_correct_keys_in_dictionsty(self):
+        # Array
+        expected_timeframe = TimeFrame.DAY
+
+        for i in self.impl_dic:
+            with self.subTest(i=i):
+                impl_name = i
+                impl: AbsStockQuoteLoader = self.impl_dic[i]
+                expected_stock_codes  = self.stock_source_map[i]
+
+                self.logger.info(f"Test {impl_name}")
+
+                # Act
+                asserted_dic = impl.download_many(expected_stock_codes, self.expected_from_dt, self.expected_till_dt, expected_timeframe)
+                
+                # Assert
+                self.logger.info("Loaded data")
+                self.logger.info(asserted_dic)
+                self.assertEqual(len(expected_stock_codes), len(asserted_dic))
+                for code in expected_stock_codes:
+                    asserted_dic[code]
+                    self.assertEqual(3, len(asserted_dic[code]))
+
+class AbsStockQuoteLoaderImpl_download_TestCase(unittest.TestCase):
+    logger = logging.getLogger(__name__)
+    logging.basicConfig(format='%(asctime)s %(module)s %(levelname)s: %(message)s',
+                        datefmt='%m/%d/%Y %I:%M:%S %p', level=logging.DEBUG)
+
+    impl_dic = get_impl_dic()
+    stock_source_map = {"Yahoo": "BTC-USD", "Investing.com": InvestingStock("AAPL", "United States"), "Moex.ru": "AAPL-RM"}
+
+
+    expected_from_dt = date(2020, 9, 15)
+    expected_till_dt = date(2020, 9, 18)
+
     def test_WHEN_request_data_for_serveral_days_THEN_get_correct_count_of_lines(self):
         # Array
         expected_timeframe = TimeFrame.DAY

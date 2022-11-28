@@ -1,3 +1,4 @@
+from typing import Any, Dict, List
 from ..abs_stock_quote_loader import AbsStockQuoteLoader, TimeFrame, date, pd, URL
 from abc import ABC, abstractmethod, abstractproperty
 from .inveting_com_loader import load_stock_candles
@@ -9,6 +10,9 @@ class InvestingStockQuoteLoader(AbsStockQuoteLoader):
         if not isinstance(stock, InvestingStock):
             raise AttributeError("Stock must be instance of InvestingStock")
         return load_stock_candles(stock.Stock, stock.Country, date_from, date_till, timeframe)
+    
+    def download_many(self, stock: List, date_from: date, date_till: date, timeframe: TimeFrame) -> Dict[Any, pd.DataFrame]:
+        return None
     
     @property
     def source_url(self)->URL:
