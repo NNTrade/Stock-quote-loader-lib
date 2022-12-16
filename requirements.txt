@@ -1,4 +1,4 @@
-git+https://git@github.com/NNTrade/TimeFrame-lib.git@v1.0.1#egg=NNTrade.common
+NNTrade.common @ git+https://git@github.com/NNTrade/TimeFrame-lib.git@v1.0.1#egg=NNTrade.common
 investpy
 investiny
 pandas-datareader
