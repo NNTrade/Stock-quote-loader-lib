@@ -11,9 +11,6 @@ class InvestingStockQuoteLoader(AbsStockQuoteLoader):
             raise AttributeError("Stock must be instance of InvestingStock")
         return load_stock_candles(stock.Stock, stock.Country, date_from, date_till, timeframe)
     
-    def download_many(self, stock: List, date_from: date, date_till: date, timeframe: TimeFrame) -> Dict[Any, pd.DataFrame]:
-        return None
-    
     @property
     def source_url(self)->URL:
         return URL("https://www.investing.com/")

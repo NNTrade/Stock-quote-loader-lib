@@ -1,6 +1,5 @@
-from typing import Any, Dict, List, Tuple
+from typing import Tuple
 from ..abs_stock_quote_loader import AbsStockQuoteLoader, TimeFrame, date, pd, URL
-from abc import ABC, abstractmethod, abstractproperty
 import logging
 from ..date_checks import check_date
 import pandas_datareader as pdr
@@ -30,7 +29,7 @@ class MoexStockQuoteLoader(AbsStockQuoteLoader):
         ret_df.index = ret_df.index.rename('start_date_time')
         return ret_df
 
-    def download(self, stock, date_from:date, date_till:date, timeframe: TimeFrame)->pd.DataFrame:
+    def _download_(self, stock, date_from:date, date_till:date, timeframe: TimeFrame)->pd.DataFrame:
        
         logger: logging.Logger = self.logger.getChild("download")
         logger.debug("Check input parameters")
@@ -52,31 +51,6 @@ class MoexStockQuoteLoader(AbsStockQuoteLoader):
 
         return ret_data
     
-    '''
-    Deprecated
-    def download_many(self, stock_list: List, date_from: date, date_till: date, timeframe: TimeFrame) -> Dict[Any, pd.DataFrame]:
-        logger: logging.Logger = self.logger.getChild("download_many")
-        logger.debug("Check input parameters")
-        self.__check_input_parameters__(date_from, date_till, timeframe)
-
-        if not isinstance(stock_list, List):
-            raise AttributeError("Stock should be a list")
-
-        logger.info("Start download_many from MOEX finance")
-        from_date, till_date = self.__convert_date__(date_from, date_till)
-
-        logger.info(
-            f"Download stock {stock_list} timeframe {timeframe.name}")
-
-        data: pd.DataFrame = pdr.get_data_moex(stock_list, from_date, till_date)
-
-        _ret_dic = {}
-        for stock in stock_list:
-            _ret_dic[stock] = self.__convert_moex_df__(data[data["SECID"]==stock])
-
-        return _ret_dic
-    '''
-
     @property
     def source_url(self)->URL:
         return URL("https://www.moex.com/")
