@@ -32,4 +32,4 @@ class FileCache(AbsCache):
   def args_to_key(self, load_request: LoadRequest):
     date_from_str = load_request.quote_request.date_from.strftime('%Y-%m-%d')
     date_till_str = load_request.quote_request.date_till.strftime('%Y-%m-%d')
-    return f'{load_request.source}__{load_request.quote_request.chart.stock}__{load_request.quote_request.chart.timeframe.full_name()}__{date_from_str}__{date_till_str}.csv'
+    return f'{load_request.source.value}__{load_request.quote_request.chart.stock}__{load_request.quote_request.chart.timeframe.full_name()}__{date_from_str}__{date_till_str}.csv'

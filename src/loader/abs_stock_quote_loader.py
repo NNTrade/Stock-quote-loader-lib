@@ -30,8 +30,7 @@ class AbsStockQuoteLoader(ABC):
                 self.logger.warning(
                     "use_cache is True, but cache_logger is None")
             elif not reload_cache:
-                cached_df = self.cache_loader.load_df(
-                    self.__class__.__name__, LoadRequest(self.source_type, quote_request))
+                cached_df = self.cache_loader.load_df(LoadRequest(self.source_type, quote_request))
                 if cached_df is not None:
                     self.logger.info("Cached data found")
                     return cached_df
