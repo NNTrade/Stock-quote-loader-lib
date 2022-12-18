@@ -4,6 +4,7 @@ import logging
 from ..date_checks import check_date
 import pandas_datareader as pdr
 from datetime import timedelta
+from ..config import QuoteRequest, Source
 
 class MoexStockQuoteLoader(AbsStockQuoteLoader):
     logger = logging.getLogger("MoexStockQuoteLoader")
@@ -29,28 +30,32 @@ class MoexStockQuoteLoader(AbsStockQuoteLoader):
         ret_df.index = ret_df.index.rename('start_date_time')
         return ret_df
 
-    def _download_(self, stock, date_from:date, date_till:date, timeframe: TimeFrame)->pd.DataFrame:
+    def _download_(self,quote_request: QuoteRequest)->pd.DataFrame:
        
         logger: logging.Logger = self.logger.getChild("download")
         logger.debug("Check input parameters")
-        self.__check_input_parameters__(date_from, date_till, timeframe)
+        self.__check_input_parameters__(quote_request.date_from, quote_request.date_till, quote_request.chart.timeframe)
         
 
         logger.info("Start download from MOEX finance")
-        from_date, till_date = self.__convert_date__(date_from, date_till)
+        from_date, till_date = self.__convert_date__(quote_request.date_from, quote_request.date_till)
 
         logger.info(
-            f"Download stock {stock} timeframe {timeframe.name}")
-        data: pd.DataFrame = pdr.get_data_moex([stock], from_date, till_date)
+            f"Download stock {quote_request.chart.stock} timeframe {quote_request.chart.timeframe.name}")
+        data: pd.DataFrame = pdr.get_data_moex([quote_request.chart.stock], from_date, till_date)
 
         ret_data = self.__convert_moex_df__(data)
 
         if len(ret_data) == 0:
             raise AttributeError(
-                    f"No data for stock {stock}")
+                    f"No data for stock {quote_request.chart.stock}")
 
         return ret_data
     
     @property
     def source_url(self)->URL:
         return URL("https://www.moex.com/")
+
+    @property
+    def source_type(self)->Source:
+        return Source.Moex

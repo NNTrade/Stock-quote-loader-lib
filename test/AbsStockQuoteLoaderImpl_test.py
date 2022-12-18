@@ -4,6 +4,7 @@ from datetime import date, timedelta
 from NNTrade.common import TimeFrame
 from NNTrade.common.candle_col_name import CLOSE, LOW, OPEN, HIGH, VOLUME, INDEX
 from src.loader import YahooStockQuoteLoader, AbsStockQuoteLoader, MoexStockQuoteLoader
+from src.loader.config import QuoteRequest, ChartConfig
 
 def get_impl_dic():
     return {"Yahoo": YahooStockQuoteLoader(), "Moex.ru": MoexStockQuoteLoader()}
@@ -51,17 +52,17 @@ class AbsStockQuoteLoaderImpl_download_mass_TestCase(unittest.TestCase):
                 expected_stock_codes  = self.stock_source_map[i]
 
                 self.logger.info(f"Test {impl_name}")
+                expected_requests = [QuoteRequest(ChartConfig(expected_stock_code, expected_timeframe), self.expected_from_dt, self.expected_till_dt) for expected_stock_code in expected_stock_codes]
 
                 # Act
-                asserted_dic = impl.download_many(expected_stock_codes, self.expected_from_dt, self.expected_till_dt, expected_timeframe)
+                asserted_dic = impl.download_many(expected_requests)
                 
                 # Assert
                 self.logger.info("Loaded data")
                 self.logger.info(asserted_dic)
                 self.assertEqual(len(expected_stock_codes), len(asserted_dic))
-                for code in expected_stock_codes:
-                    asserted_dic[code]
-                    self.assertEqual(3, len(asserted_dic[code]))
+                for expected_request in expected_requests:
+                    self.assertEqual(3, len(asserted_dic[expected_request]))
 
 class AbsStockQuoteLoaderImpl_download_TestCase(unittest.TestCase):
     logger = logging.getLogger(__name__)
@@ -86,9 +87,10 @@ class AbsStockQuoteLoaderImpl_download_TestCase(unittest.TestCase):
                 expected_stock_code  = self.stock_source_map[i]
 
                 self.logger.info(f"Test {impl_name}")
-
+                expected_request = QuoteRequest(ChartConfig(expected_stock_code, expected_timeframe), self.expected_from_dt, self.expected_till_dt)
+                
                 # Act
-                asserted_df = impl.download(expected_stock_code, self.expected_from_dt, self.expected_till_dt, expected_timeframe)
+                asserted_df = impl.download(expected_request)
                 
                 # Assert
                 self.logger.info("Loaded data")
@@ -106,9 +108,10 @@ class AbsStockQuoteLoaderImpl_download_TestCase(unittest.TestCase):
                 expected_stock_code  = self.stock_source_map[i]
 
                 self.logger.info(f"Test {impl_name}")
+                expected_request = QuoteRequest(ChartConfig(expected_stock_code, expected_timeframe), self.expected_from_dt, self.expected_till_dt)
 
                 # Act
-                asserted_df = impl.download(expected_stock_code, self.expected_from_dt, self.expected_till_dt, expected_timeframe)
+                asserted_df = impl.download(expected_request)
                 
                 # Assert
                 self.logger.info("Loaded data")
@@ -132,9 +135,10 @@ class AbsStockQuoteLoaderImpl_download_TestCase(unittest.TestCase):
                 expected_stock_code  = self.stock_source_map[i]
 
                 self.logger.info(f"Test {impl_name}")
+                expected_request = QuoteRequest(ChartConfig(expected_stock_code, expected_timeframe), self.expected_from_dt, self.expected_till_dt)
 
                 # Act
-                asserted_df = impl.download(expected_stock_code, self.expected_from_dt, self.expected_till_dt, expected_timeframe)
+                asserted_df = impl.download(expected_request)
                 
                 # Assert
                 self.logger.info("Loaded data")
@@ -153,9 +157,10 @@ class AbsStockQuoteLoaderImpl_download_TestCase(unittest.TestCase):
                 expected_stock_code  = self.stock_source_map[i]
 
                 self.logger.info(f"Test {impl_name}")
+                expected_request = QuoteRequest(ChartConfig(expected_stock_code, expected_timeframe), self.expected_from_dt, expected_till_dt)
 
                 # Act
-                asserted_df = impl.download(expected_stock_code, self.expected_from_dt, expected_till_dt, expected_timeframe)
+                asserted_df = impl.download(expected_request)
                 
                 # Assert
                 self.logger.info("Loaded data")
@@ -174,10 +179,11 @@ class AbsStockQuoteLoaderImpl_download_TestCase(unittest.TestCase):
                 expected_stock_code  = self.stock_source_map[i]
 
                 self.logger.info(f"Test {impl_name}")
+                expected_request = QuoteRequest(ChartConfig(expected_stock_code, expected_timeframe), self.expected_from_dt, expected_till_dt)
 
                 # Assert
                 with self.assertRaises(Exception):
-                    impl.download(expected_stock_code, self.expected_from_dt, expected_till_dt, expected_timeframe)
+                    impl.download(expected_request)
 
 
     def test_WHEN_request_till_eq_from_THEN_get_error(self):
@@ -192,10 +198,11 @@ class AbsStockQuoteLoaderImpl_download_TestCase(unittest.TestCase):
                 expected_stock_code  = self.stock_source_map[i]
 
                 self.logger.info(f"Test {impl_name}")
+                expected_request = QuoteRequest(ChartConfig(expected_stock_code, expected_timeframe), self.expected_from_dt, expected_till_dt)
 
                 # Assert
                 with self.assertRaises(Exception):
-                    impl.download(expected_stock_code, self.expected_from_dt, expected_till_dt, expected_timeframe)
+                    impl.download(expected_request)
                     
     def test_WHEN_request_with_wrong_stock_THEN_get_exception(self):
         # Array
@@ -208,10 +215,11 @@ class AbsStockQuoteLoaderImpl_download_TestCase(unittest.TestCase):
                 impl: AbsStockQuoteLoader = self.impl_dic[i]
 
                 self.logger.info(f"Test {impl_name}")
+                expected_request = QuoteRequest(ChartConfig(expected_stock_code, expected_timeframe), self.expected_from_dt, self.expected_till_dt)
 
                 # Assert
                 with self.assertRaises(Exception):
-                    impl.download(expected_stock_code, self.expected_from_dt, self.expected_till_dt, expected_timeframe)
+                    impl.download(expected_request)
 
     def test_WHEN_request_more_than_30_intraday_THEN_get_exception(self):
         # Array
@@ -225,8 +233,9 @@ class AbsStockQuoteLoaderImpl_download_TestCase(unittest.TestCase):
                 expected_stock_code  = self.stock_source_map[i]
 
                 self.logger.info(f"Test {impl_name}")
-
+                
                 for i in [e for e in TimeFrame if e.to_seconds() < 24*60*60]:
                     with self.subTest(i=i):
+                        expected_request = QuoteRequest(ChartConfig(expected_stock_code, i), self.expected_from_dt, expected_till_dt)
                         with self.assertRaises(Exception):
-                            impl.download(expected_stock_code, self.expected_from_dt, expected_till_dt, i)
+                            impl.download(expected_request)

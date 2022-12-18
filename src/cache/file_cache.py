@@ -1,15 +1,15 @@
-from .abs_cache import AbsCache, pd, date, TimeFrame
+from .abs_cache import AbsCache, pd
 import os
 import logging
-
+from ..loader.config import LoadRequest
 
 class FileCache(AbsCache):
   def __init__(self, cache_folder: str):
       self.__cache_folder = cache_folder
       self.logger = logging.getLogger("FileCacheLoader")
 
-  def save_df(self, df: pd.DataFrame, source:str, stock, date_from: date, date_till: date, timeframe: TimeFrame)->str:
-    cache_path = self.__cache_file_path__(source, stock, date_from, date_till, timeframe) 
+  def save_df(self, df: pd.DataFrame, load_request: LoadRequest)->str:
+    cache_path = self.__cache_file_path__(load_request) 
     if os.path.exists(cache_path):   
       self.logger.info("Remove previous cached file %s", cache_path)    
       os.remove(cache_path)
@@ -18,19 +18,18 @@ class FileCache(AbsCache):
     self.logger.info("Save df into file %s", cache_path)    
     return cache_path
 
-  def load_df(self, source:str, stock, date_from: date, date_till: date, timeframe: TimeFrame) -> pd.DataFrame:
-    cache_path = self.__cache_file_path__(source, stock, date_from, date_till, timeframe)
+  def load_df(self, load_request: LoadRequest) -> pd.DataFrame:
+    cache_path = self.__cache_file_path__(load_request)
     if not os.path.exists(cache_path):   
       return None
     df = pd.read_csv(cache_path,sep=";", decimal=",").set_index("start_date_time")
     self.logger.info("Load df from file %s", cache_path)    
     return df
 
-  def __cache_file_path__(self,source:str, stock, date_from: date, date_till: date, timeframe: TimeFrame ):
-    return os.path.join(self.__cache_folder, FileCache.args_to_file_name(source, stock, date_from, date_till, timeframe)) 
+  def __cache_file_path__(self,load_request: LoadRequest):
+    return os.path.join(self.__cache_folder, self.args_to_key(load_request)) 
 
-  @staticmethod
-  def args_to_file_name(source:str, stock, date_from: date, date_till: date, timeframe: TimeFrame) ->str:
-    date_from_str = date_from.strftime('%Y-%m-%d')
-    date_till_str = date_till.strftime('%Y-%m-%d')
-    return f'{source}__{stock}__{timeframe.full_name()}__{date_from_str}__{date_till_str}.csv'
+  def args_to_key(self, load_request: LoadRequest):
+    date_from_str = load_request.quote_request.date_from.strftime('%Y-%m-%d')
+    date_till_str = load_request.quote_request.date_till.strftime('%Y-%m-%d')
+    return f'{load_request.source}__{load_request.quote_request.chart.stock}__{load_request.quote_request.chart.timeframe.full_name()}__{date_from_str}__{date_till_str}.csv'
