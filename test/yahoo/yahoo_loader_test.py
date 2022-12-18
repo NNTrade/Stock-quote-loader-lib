@@ -2,10 +2,10 @@ import unittest
 import logging
 import pandas as pd
 from datetime import datetime, date
-from src.yahoo.yahoo_loader import load_stock_candles
+from src.loader.yahoo.yahoo_loader import load_stock_candles
 from NNTrade.common import TimeFrame
 from test.test_tools.compare_dt import compare_df
-
+from NNTrade.common.candle_col_name import CLOSE, OPEN, HIGH, LOW , VOLUME, INDEX
 
 class LoadQuoteTestCase(unittest.TestCase):
     logger = logging.getLogger(__name__)
@@ -14,14 +14,14 @@ class LoadQuoteTestCase(unittest.TestCase):
 
     def test_When_request_data_Then_get_correct_data(self):
         # Array
-        expected_df = pd.DataFrame(data={"open": [8760.285156, 9078.308594, 9121.600586],
-                                         "high": [9142.054688, 9167.695312, 9163.220703],
-                                         "low": [8757.253906, 9032.079102, 8890.744141],
-                                         "close": [9078.762695, 9122.545898, 8909.954102],
-                                         "volume": [39698054597, 40826885651, 36216930370],
-                                         "start_date_time": [datetime(2020, 3, 5), datetime(2020, 3, 6),
+        expected_df = pd.DataFrame(data={OPEN: [8760.285156, 9078.308594, 9121.600586],
+                                         HIGH: [9142.054688, 9167.695312, 9163.220703],
+                                         LOW: [8757.253906, 9032.079102, 8890.744141],
+                                         CLOSE: [9078.762695, 9122.545898, 8909.954102],
+                                         VOLUME: [39698054597, 40826885651, 36216930370],
+                                         INDEX: [datetime(2020, 3, 5), datetime(2020, 3, 6),
                                                              datetime(2020, 3, 7)]})\
-                        .set_index("start_date_time")
+                        .set_index(INDEX)
 
         expected_stock_code = "BTC-USD"
         expected_timeframe = TimeFrame.DAY

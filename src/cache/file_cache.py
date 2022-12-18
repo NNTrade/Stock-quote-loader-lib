@@ -33,4 +33,4 @@ class FileCache(AbsCache):
   def args_to_file_name(source:str, stock, date_from: date, date_till: date, timeframe: TimeFrame) ->str:
     date_from_str = date_from.strftime('%Y-%m-%d')
     date_till_str = date_till.strftime('%Y-%m-%d')
-    return f'{source}__{stock}__{date_from_str}__{date_till_str}__{timeframe.full_name()}.csv'
+    return f'{source}__{stock}__{timeframe.full_name()}__{date_from_str}__{date_till_str}.csv'

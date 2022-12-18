@@ -2,10 +2,11 @@ import unittest
 import logging
 from datetime import date, timedelta
 from NNTrade.common import TimeFrame
-from src import YahooStockQuoteLoader, AbsStockQuoteLoader, InvestingStockQuoteLoader, InvestingStock, MoexStockQuoteLoader
+from NNTrade.common.candle_col_name import CLOSE, LOW, OPEN, HIGH, VOLUME, INDEX
+from src.loader import YahooStockQuoteLoader, AbsStockQuoteLoader, MoexStockQuoteLoader
 
 def get_impl_dic():
-    return {"Yahoo": YahooStockQuoteLoader(), "Investing.com": InvestingStockQuoteLoader(), "Moex.ru": MoexStockQuoteLoader()}
+    return {"Yahoo": YahooStockQuoteLoader(), "Moex.ru": MoexStockQuoteLoader()}
 
 class AbsStockQuoteLoaderImpl_source_url_TestCase(unittest.TestCase):
     logger = logging.getLogger(__name__)
@@ -33,7 +34,6 @@ class AbsStockQuoteLoaderImpl_download_mass_TestCase(unittest.TestCase):
 
     impl_dic = get_impl_dic()
     stock_source_map = {"Yahoo": ["BTC-USD","RUB=X"], 
-                        "Investing.com": [InvestingStock("AAPL", "United States"), InvestingStock("TSLA", "United States")], 
                         "Moex.ru": ["AAPL-RM", "GAZP"]}
 
 
@@ -69,7 +69,7 @@ class AbsStockQuoteLoaderImpl_download_TestCase(unittest.TestCase):
                         datefmt='%m/%d/%Y %I:%M:%S %p', level=logging.DEBUG)
 
     impl_dic = get_impl_dic()
-    stock_source_map = {"Yahoo": "BTC-USD", "Investing.com": InvestingStock("AAPL", "United States"), "Moex.ru": "AAPL-RM"}
+    stock_source_map = {"Yahoo": "BTC-USD", "Moex.ru": "AAPL-RM"}
 
 
     expected_from_dt = date(2020, 9, 15)
@@ -113,12 +113,13 @@ class AbsStockQuoteLoaderImpl_download_TestCase(unittest.TestCase):
                 # Assert
                 self.logger.info("Loaded data")
                 self.logger.info(asserted_df)
+                self.assertEqual(INDEX, asserted_df.index.name)
                 self.assertEqual(5, len(asserted_df.columns))
-                self.assertIn("open", asserted_df.columns)
-                self.assertIn("high", asserted_df.columns)
-                self.assertIn("low", asserted_df.columns)
-                self.assertIn("close", asserted_df.columns)
-                self.assertIn("volume", asserted_df.columns)
+                self.assertIn(OPEN, asserted_df.columns)
+                self.assertIn(HIGH, asserted_df.columns)
+                self.assertIn(LOW, asserted_df.columns)
+                self.assertIn(CLOSE, asserted_df.columns)
+                self.assertIn(VOLUME, asserted_df.columns)
 
     def test_WHEN_request_data_THEN_get_correct_index_name(self):
         # Array
