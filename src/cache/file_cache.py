@@ -6,7 +6,7 @@ from ..loader.config import LoadRequest
 class FileCache(AbsCache):
   def __init__(self, cache_folder: str):
       self.__cache_folder = cache_folder
-      self.logger = logging.getLogger("FileCacheLoader")
+      self.logger = logging.getLogger("FileCache")
 
   def save_df(self, df: pd.DataFrame, load_request: LoadRequest)->str:
     cache_path = self.__cache_file_path__(load_request) 

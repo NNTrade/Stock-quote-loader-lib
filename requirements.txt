@@ -1,5 +1,7 @@
 NNTrade.common @ git+https://git@github.com/NNTrade/common.git#egg=NNTrade.common
+pymongo
 pandas-datareader
 yfinance~=0.1.87
 pandas~=1.5.2
 numpy~=1.23.5
+httpx

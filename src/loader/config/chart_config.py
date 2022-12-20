@@ -1,6 +1,7 @@
 from __future__ import annotations
 from NNTrade.common import TimeFrame
-from typing import List
+from typing import List, Dict
+import json
 
 class ChartConfig:
   """Chart config include TimeFrame for download
@@ -24,3 +25,16 @@ class ChartConfig:
       for tf in timeframe_list:
         _ret.append(ChartConfig(stock, tf))
     return _ret
+
+  def to_dict(self)->Dict:
+    return {"stock": self.stock, "timeframe": self.timeframe.full_name()}
+
+  def __eq__(self, another: ChartConfig):
+    return hasattr(another, 'stock') and hasattr(another, "timeframe") and \
+           self.stock == another.stock and self.timeframe == another.timeframe
+
+  def __hash__(self):
+    return hash(self.stock) ^ hash(self.timeframe)
+
+  def __str__(self) -> str:
+   return json.dumps(self.to_dict(), sort_keys=True)
