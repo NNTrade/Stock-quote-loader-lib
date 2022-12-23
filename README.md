@@ -22,3 +22,4 @@ from NNTrade.datasource.stock_quote_loader_lib.loader
 - AbsStockQuoteLoader - abstract class for load data
 - YahooStockQuoteLoader - download data from Yahoo finace
 - MoexStockQuoteLoader - download data from Moex
+
