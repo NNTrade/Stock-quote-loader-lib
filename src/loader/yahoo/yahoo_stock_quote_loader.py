@@ -1,5 +1,4 @@
-from ..config import QuoteRequest, Source
-from ..abs_stock_quote_loader import AbsStockQuoteLoader, TimeFrame, date, pd, URL
+from ..abs_stock_quote_loader import AbsStockQuoteLoader, pd, URL, QuoteRequest, Source
 from .yahoo_loader import load_stock_candles
 
 class YahooStockQuoteLoader(AbsStockQuoteLoader):

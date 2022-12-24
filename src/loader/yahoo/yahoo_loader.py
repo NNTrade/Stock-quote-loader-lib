@@ -31,7 +31,7 @@ def load_stock_candles(stock_code: str, from_dt: date, till_dt: date, timeframe:
     data.drop("Adj Close", inplace=True, axis=1)
     data.columns = [c.lower() for c in data.columns]
     data.index = data.index.rename('start_date_time')
-
+    
     if len(data) == 0:
         raise AttributeError(
                 f"No data for stock {stock_code}")

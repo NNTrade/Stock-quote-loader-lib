@@ -1,10 +1,11 @@
 from typing import Tuple
-from ..abs_stock_quote_loader import AbsStockQuoteLoader, TimeFrame, date, pd, URL
+from ..abs_stock_quote_loader import AbsStockQuoteLoader, pd, URL, QuoteRequest, Source
 import logging
 from ..date_checks import check_date
 import pandas_datareader as pdr
 from datetime import timedelta
-from ..config import QuoteRequest, Source
+from NNTrade.common import TimeFrame
+from datetime import date
 
 class MoexStockQuoteLoader(AbsStockQuoteLoader):
     logger = logging.getLogger("MoexStockQuoteLoader")

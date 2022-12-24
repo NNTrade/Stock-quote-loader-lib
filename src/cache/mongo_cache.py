@@ -1,6 +1,6 @@
 from .abs_cache import AbsCache, pd
 import logging
-from ..loader.config import LoadRequest
+from ..config import LoadRequest
 from typing import Tuple
 from pymongo import MongoClient
 from pymongo.collection import Collection
@@ -36,6 +36,7 @@ class MongoCache(AbsCache):
 
       data = {}
       data["query_request"] = self.args_to_key(load_request)
+      mng_collection.delete_many(data)
       data["payload"] = csv_str
       new_obj_id = mng_collection.insert_one(data)
       
@@ -54,7 +55,10 @@ class MongoCache(AbsCache):
       for doc in mng_collection.find(query):
         if _ret is None:
           buffer = io.StringIO(doc["payload"])
-          _ret = pd.read_csv(buffer ,sep=";", decimal=",").set_index("start_date_time")
+          _ret = pd.read_csv(buffer ,sep=";", decimal=",", date_parser="%Y-%m-%d %H:%M:%S")
+          datetime_index = pd.DatetimeIndex(_ret["start_date_time"].values)    
+          _ret=_ret.set_index(datetime_index)
+          _ret.drop('start_date_time',axis=1,inplace=True)          
         else:
           self.logger.warning("Find several cached data, clear manualy. Collection %s config %s", load_request.source.name, self.args_to_key())
 

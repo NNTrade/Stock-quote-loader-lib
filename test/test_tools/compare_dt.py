@@ -29,5 +29,6 @@ def compare_df(test_case: unittest.TestCase, expected_df: pd.DataFrame, asserted
                 elif np.isnan(expVal) and np.isnan(assVal):
                     continue
                 else:
+                    test_case.assertIsInstance(assVal, type(expVal))
                     test_case.assertEquals(
-                        expVal, assVal, f"Values of index {i} in col {c} doesn't equal (expect {expVal} != assert {assVal})")
+                        round(expVal,15), round(assVal,15), f"Values of index {i} in col {c} doesn't equal (expect {expVal} != assert {assVal})")

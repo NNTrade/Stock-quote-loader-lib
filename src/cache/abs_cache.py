@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 import pandas as pd
-from ..loader.config import LoadRequest
+from ..config import LoadRequest
 
 class AbsCache(ABC):
   @abstractmethod

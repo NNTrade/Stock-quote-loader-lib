@@ -1,7 +1,7 @@
 from .abs_cache import AbsCache, pd
 import os
 import logging
-from ..loader.config import LoadRequest
+from ..config import LoadRequest
 
 class FileCache(AbsCache):
   def __init__(self, cache_folder: str):
@@ -14,7 +14,7 @@ class FileCache(AbsCache):
       self.logger.info("Remove previous cached file %s", cache_path)    
       os.remove(cache_path)
 
-    df.to_csv(cache_path, sep=";",decimal=",")
+    df.to_csv(cache_path, sep=";",decimal=",",date_format="%Y-%m-%d %H:%M:%S")
     self.logger.info("Save df into file %s", cache_path)    
     return cache_path
 
@@ -22,7 +22,10 @@ class FileCache(AbsCache):
     cache_path = self.__cache_file_path__(load_request)
     if not os.path.exists(cache_path):   
       return None
-    df = pd.read_csv(cache_path,sep=";", decimal=",").set_index("start_date_time")
+    df = pd.read_csv(cache_path,sep=";", decimal=",", date_parser="%Y-%m-%d %H:%M:%S")
+    datetime_index = pd.DatetimeIndex(df["start_date_time"].values)    
+    df=df.set_index(datetime_index)
+    df.drop('start_date_time',axis=1,inplace=True)
     self.logger.info("Load df from file %s", cache_path)    
     return df
 

@@ -1,12 +1,10 @@
 from abc import ABC, abstractmethod, abstractproperty
-from datetime import date
 from httpx import URL
 import pandas as pd
-from NNTrade.common import TimeFrame
 from typing import List, Dict, Any
 import logging
 from ..cache import AbsCache
-from .config import QuoteRequest, Source, LoadRequest
+from ..config import QuoteRequest, Source, LoadRequest
 
 
 class AbsStockQuoteLoader(ABC):

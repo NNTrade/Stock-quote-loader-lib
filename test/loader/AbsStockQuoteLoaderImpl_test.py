@@ -4,7 +4,8 @@ from datetime import date, timedelta
 from NNTrade.common import TimeFrame
 from NNTrade.common.candle_col_name import CLOSE, LOW, OPEN, HIGH, VOLUME, INDEX
 from src.loader import YahooStockQuoteLoader, AbsStockQuoteLoader, MoexStockQuoteLoader
-from src.loader.config import QuoteRequest, ChartConfig
+from src.config import QuoteRequest, ChartConfig
+from datetime import datetime
 
 def get_impl_dic():
     return {"Yahoo": YahooStockQuoteLoader(), "Moex.ru": MoexStockQuoteLoader()}
@@ -124,7 +125,7 @@ class AbsStockQuoteLoaderImpl_download_TestCase(unittest.TestCase):
                 self.assertIn(CLOSE, asserted_df.columns)
                 self.assertIn(VOLUME, asserted_df.columns)
 
-    def test_WHEN_request_data_THEN_get_correct_index_name(self):
+    def test_WHEN_request_data_THEN_get_correct_index(self):
         # Array
         expected_timeframe = TimeFrame.DAY
 
@@ -143,7 +144,10 @@ class AbsStockQuoteLoaderImpl_download_TestCase(unittest.TestCase):
                 # Assert
                 self.logger.info("Loaded data")
                 self.logger.info(asserted_df)
-                self.assertEqual("start_date_time", asserted_df.index.name)
+                self.assertEqual("start_date_time", asserted_df.index.name, "Wrong index name")
+                for index in asserted_df.index:
+                    self.assertIsInstance(index, datetime, "Wrong index value")
+                    
 
     def test_WHEN_request_dataa_for_one_day_data_THEN_get_1_line(self):
         # Array
