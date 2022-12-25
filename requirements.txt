@@ -3,5 +3,4 @@ pymongo
 pandas-datareader
 yfinance
 pandas
-numpy
 httpx
